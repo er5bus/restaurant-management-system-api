@@ -1,0 +1,49 @@
+version: "3"
+
+
+services:
+
+  #build_project:
+  #  image: maven:3.6.3-jdk-8
+  #  command: mvn spring-boot:run -Drun.arguments="spring.profiles.active=UAT"
+  #  ports:
+  #    - 8080:8080
+  #  volumes:
+  #    - .:/usr/src/project
+  #    - m2:/root/.m2
+  #  working_dir: /usr/src/project
+
+  restaurant_project:
+    build:
+      context: .
+    restart: on-failure:5
+    volumes:
+      - ./src:/usr/src/project/src
+      - m2:/root/.m2
+        #env_file:
+        #- ./.env
+    ports:
+      - 8080:8080
+      - 8000:8000
+
+  mysql_host:
+    image: mysql:8.0
+    restart: on-failure
+    environment:
+      MYSQL_ROOT_PASSWORD: "secret"
+      MYSQL_DATABASE: "restaurant"
+      MYSQL_USER: "user_db"
+      MYSQL_PASSWORD: "password"
+    volumes:
+      - "db_restaurants:/var/lib/mysql"
+
+  adminer:
+    image: adminer
+    restart: on-failure
+    ports:
+      - 8081:8080
+
+volumes:
+  db_restaurants:
+  m2: 
+    name: java-dep-m2
