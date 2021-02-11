@@ -57,12 +57,14 @@ public class TableService {
   }
 
   @Transactional
-  public TableDTO createTable(TableDTO tableInRequest) {
+  public TableEntity createTable(TableDTO tableInRequest) {
     TableEntity table = mapper.map(tableInRequest, TableEntity.class);
-    List<TicketEntity> tickets = table.getTickets();
-
-    //double charge = tickets.stream().map(ticket -> ticket.getDishs()).map(dish -> dish.getPrice()).mapToDouble(Double::doubleValue).sum().orElse(0);
-    table.setCharge(0);
+    List<Double> chargeList = table.getTickets().stream()
+      .flatMap(t -> t.getDishs().stream())
+      .map(dish -> dish.getPrice())
+      .collect(Collectors.toList());
+    System.err.println(chargeList);
+    table.setCharge(chargeList.stream().mapToDouble(d -> d).sum());
 
     TableEntity tableInBase = tableRepository.save(table);
 
@@ -70,7 +72,7 @@ public class TableService {
       throw new ResourceNotFoundException("This table has no tickets");
     }
 
-    tickets.forEach(ticket -> {
+    table.getTickets().forEach(ticket -> {
       if (ticket.getClient() == null) {
         throw new ResourceNotFoundException("This table has no client");
       }
@@ -99,7 +101,7 @@ public class TableService {
       ticketRepository.save(ticket);
     });
 
-    return mapper.map(tableInBase, TableDTO.class);
+    return tableInBase;
   }
 
   public TableEntity getTable(int id) {
@@ -125,7 +127,7 @@ public class TableService {
   }
 
   public Page<TableEntity> getAllTables(Integer page, Integer size) {
-    Page pageOfTables = tableRepository.findAll(new PageRequest(page, size));
+    Page<TableEntity> pageOfTables = tableRepository.findAll(new PageRequest(page, size));
     return pageOfTables;
   }
 }

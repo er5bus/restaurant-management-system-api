@@ -1,7 +1,15 @@
 package com.er5bus.restaurant.service;
 
+import java.util.function.Function;
+
+import java.util.Comparator;
+
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Predicate;
+
 import java.util.Optional;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import com.er5bus.restaurant.exception.ResourceNotFoundException;
@@ -38,7 +46,7 @@ public class StatsService {
 
   public StatsService() {
   }
-  
+
   @Autowired
   private TableRepository tableRepository;
 
@@ -53,18 +61,73 @@ public class StatsService {
 
 
   public DishEntity mostSelledDish () {
-    return dishRepository.findById(1).map(dish -> dish)
-      .orElseThrow(() -> new ResourceNotFoundException("Dishs not found!"));
+    Map<DishEntity, Long> map = tableRepository.findAll().stream().
+      flatMap(table -> table.getTickets().stream())
+      .flatMap(ticket -> ticket.getDishs().stream())
+      .collect(
+          Collectors.groupingBy(
+            d -> d,
+            Collectors.counting()
+            )
+          )
+      ;
+
+    System.err.println("**************");
+    System.err.println(map);
+    System.err.println("**************");
+
+    return map.entrySet()
+      .stream()
+      .max(Map.Entry.comparingByValue(Long::compareTo))
+      .get()
+      .getKey()
+      ;
   }
 
   public ClientEntity mostLoyalClient () {
-    return clientRepository.findById(1).map(client -> client)
-      .orElseThrow(() -> new ResourceNotFoundException("Client not found!"));
+    Map<ClientEntity, Long> map = tableRepository.findAll().stream()
+      .flatMap(table -> table.getTickets().stream())
+      .collect(
+          Collectors.groupingBy(
+            t -> t.getClient(),
+            Collectors.counting()
+            )
+          )
+      ;
+
+    System.err.println("**************");
+    System.err.println(map);
+    System.err.println("**************");
+
+    return map.entrySet()
+      .stream()
+      .max(Map.Entry.comparingByValue(Long::compareTo))
+      .get()
+      .getKey()
+      ;
+
   }
 
-  public TableEntity mostReservedTable () {
-    return tableRepository.findById(1).map(table -> table)
-      .orElseThrow(() -> new ResourceNotFoundException("Tables not found!"));
+  public int mostReservedTable () {
+    Map<Integer, Long> map = tableRepository.findAll().stream()
+      .collect(
+          Collectors.groupingBy(
+            t -> t.getNumber(),
+            Collectors.counting()
+            )
+          )
+      ;
+
+    System.err.println("**************");
+    System.err.println(map);
+    System.err.println("**************");
+
+    return map.entrySet()
+      .stream()
+      .max(Map.Entry.comparingByValue(Long::compareTo))
+      .get()
+      .getKey()
+      ;
   }
 
   public TableEntity mostReservedTableByClient () {

@@ -63,7 +63,7 @@ public class ClientService {
   }
 
   public Page<ClientEntity> getAllClients(Integer page, Integer size) {
-    Page pageOfClients = clientRepository.findAll(new PageRequest(page, size));
+    Page<ClientEntity> pageOfClients = clientRepository.findAll(new PageRequest(page, size));
     return pageOfClients;
   }
 }

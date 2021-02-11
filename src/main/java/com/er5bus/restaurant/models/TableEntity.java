@@ -22,13 +22,15 @@ import lombok.Setter;
 @Table(name = "TableEntity")
 @Data
 @Getter@Setter
+@ToString(exclude = {"tickets"})
 public class TableEntity {
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private int id;
 	
-	private int number;
+  @Column(unique = true, nullable = false)
+	private int number = 0;
   private int nbCovered;
   private String type;
   private double charge;

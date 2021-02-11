@@ -31,7 +31,7 @@ import lombok.Setter;
 )
 @Getter@Setter
 @Data
-@ToString(exclude = {"client"})
+@ToString(exclude = {"tickets"})
 public class ClientEntity {
 	
 	@Id

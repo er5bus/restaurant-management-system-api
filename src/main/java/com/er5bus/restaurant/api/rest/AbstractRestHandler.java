@@ -1,5 +1,7 @@
 package com.er5bus.restaurant.api.rest;
 
+import java.util.NoSuchElementException;
+
 import com.er5bus.restaurant.exception.RestErrorInfo;
 import com.er5bus.restaurant.exception.DataFormatException;
 import com.er5bus.restaurant.exception.ResourceNotFoundException;
@@ -28,6 +30,13 @@ public abstract class AbstractRestHandler implements ApplicationEventPublisherAw
 
   protected static final String  DEFAULT_PAGE_SIZE = "100";
   protected static final String DEFAULT_PAGE_NUM = "0";
+
+  @ResponseStatus(HttpStatus.BAD_REQUEST)
+  @ExceptionHandler(NoSuchElementException.class)
+  @ResponseBody
+  public RestErrorInfo handleNoSuchElementException(NoSuchElementException ex, WebRequest request, HttpServletResponse response) {
+    return new RestErrorInfo(ex, "No records existes.");
+  }
 
   @ResponseStatus(HttpStatus.BAD_REQUEST)
   @ExceptionHandler(DataIntegrityViolationException.class)

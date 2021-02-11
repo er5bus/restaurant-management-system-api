@@ -31,24 +31,24 @@ public class StatsController extends AbstractRestHandler {
   @Autowired
   private StatsService statsService;
 
-  @RequestMapping(value = "/most-selled-dish", method = RequestMethod.GET, consumes = {"application/json"}, produces = {"application/json"})
+  @RequestMapping(value = "/most-selled-dish", method = RequestMethod.GET, produces = {"application/json"})
   @ResponseStatus(HttpStatus.OK)
   @ApiOperation(value = "The most selled dish.", notes = "Return the most selled dishes")
   public DishEntity mostSelledDish () {
     return statsService.mostSelledDish();
   }
 
-  @RequestMapping(value = "/most-loyal-dish", method = RequestMethod.GET, consumes = {"application/json"}, produces = {"application/json"})
+  @RequestMapping(value = "/most-loyal-client", method = RequestMethod.GET, produces = {"application/json"})
   @ResponseStatus(HttpStatus.OK)
   @ApiOperation(value = "The most loyal.", notes = "Return the most loyal")
   public ClientEntity mostLoyalClient () {
     return statsService.mostLoyalClient();
   }
 
-  @RequestMapping(value = "/most-reseved-table", method = RequestMethod.GET, consumes = {"application/json"}, produces = {"application/json"})
+  @RequestMapping(value = "/most-reseved-table", method = RequestMethod.GET, produces = {"application/json"})
   @ResponseStatus(HttpStatus.OK)
   @ApiOperation(value = "The most reserved table.", notes = "Return the most reserved table")
-  public TableEntity mostReservedTable () {
+  public int mostReservedTable () {
     return statsService.mostReservedTable();
   }
 

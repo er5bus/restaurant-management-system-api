@@ -32,7 +32,7 @@ public class TableController extends AbstractRestHandler {
   @RequestMapping(value = "", method = RequestMethod.POST, consumes = {"application/json"}, produces = {"application/json"})
   @ResponseStatus(HttpStatus.CREATED)
   @ApiOperation(value = "Create a table resource.", notes = "Returns the URL of the new resource in the Location header.")
-  public TableDTO createTable(@RequestBody TableDTO table, HttpServletRequest request, HttpServletResponse response) {
+  public TableEntity createTable(@RequestBody TableDTO table, HttpServletRequest request, HttpServletResponse response) {
     return this.tableService.createTable(table);
   }
 

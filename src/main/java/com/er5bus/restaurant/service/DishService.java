@@ -61,7 +61,7 @@ public class DishService {
   }
 
   public Page<DishEntity> getAllDishs(Integer page, Integer size) {
-    Page pageOfDishs = dishRepository.findAll(new PageRequest(page, size));
+    Page<DishEntity> pageOfDishs = dishRepository.findAll(new PageRequest(page, size));
     return pageOfDishs;
   }
 }
