@@ -6,6 +6,7 @@ import java.util.List;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
+import javax.persistence.JoinColumn;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -32,9 +33,6 @@ public class TicketEntity {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private int id;
-	
-  @Column(unique = true, nullable = false)
-	private int identifier;
 
   private int nbCovered;
 
@@ -43,13 +41,15 @@ public class TicketEntity {
 	private double price;
 
   @ManyToMany
-  @JoinTable(name = "Composed")
+  @JoinTable(name = "composed")
 	List<DishEntity> dishs;
 
   @ManyToOne
+  @JoinColumn(name = "client_id")
 	private ClientEntity client;
 
   @ManyToOne
-	@JsonIgnore
+  @JoinColumn(name = "table_id")
+  @JsonIgnore
 	private TableEntity table;
 }

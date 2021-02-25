@@ -28,12 +28,11 @@ public class TableEntity {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private int id;
-	
-  @Column(unique = true, nullable = false)
-	private int number = 0;
+
+  @Column(unique=true)
   private int nbCovered;
+  
   private String type;
-  private double charge;
   private double extraCharge;
 	
 	@OneToMany(mappedBy = "table", cascade = CascadeType.REMOVE)

@@ -9,6 +9,8 @@ import java.util.function.Predicate;
 
 import java.util.Optional;
 import java.util.List;
+import java.time.LocalDate;
+import java.lang.Double;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -105,15 +107,36 @@ public class StatsService {
       .get()
       .getKey()
       ;
-
   }
 
-  public int mostReservedTable () {
-    Map<Integer, Long> map = tableRepository.findAll().stream()
+  public TableEntity mostReservedTable () {
+    Map<TableEntity, Double> map = tableRepository.findAll().stream()
       .collect(
           Collectors.groupingBy(
-            t -> t.getNumber(),
-            Collectors.counting()
+            t -> t,
+            Collectors.summingDouble(t -> t.getTickets().stream().map(ti -> ti.getPrice()).mapToDouble(d -> d).sum())
+          )
+        )
+      ;
+
+    System.err.println("**************");
+    System.err.println(map);
+    System.err.println("**************");
+
+    return map.entrySet()
+      .stream()
+      .max(Map.Entry.comparingByValue(Double::compareTo))
+      .get()
+      .getKey()
+      ;
+  }
+
+  public TableEntity mostReservedTableByClient (int clientId) {
+    Map<TableEntity, Double> map = tableRepository.findMostReservedTableByClient(clientId).stream()
+      .collect(
+          Collectors.groupingBy(
+            t -> t,
+            Collectors.summingDouble(t -> t.getTickets().stream().map(ti -> ti.getPrice()).mapToDouble(d -> d).sum())
             )
           )
       ;
@@ -124,26 +147,19 @@ public class StatsService {
 
     return map.entrySet()
       .stream()
-      .max(Map.Entry.comparingByValue(Long::compareTo))
+      .max(Map.Entry.comparingByValue(Double::compareTo))
       .get()
       .getKey()
       ;
   }
 
-  public TableEntity mostReservedTableByClient () {
-    return tableRepository.findById(1).map(table -> table)
-      .orElseThrow(() -> new ResourceNotFoundException("Tables not found!"));
+  public Double revenueByDayMonthWeek (int day, int month, int week) {
+    return tableRepository.findByDayAndMonthAndWeek(day, month, week).map(r -> r)
+      .orElseThrow(() -> new ResourceNotFoundException("No revenue!"));
   }
 
-  public double revenueByDayMonthWeek () {
-    //List<TableEntity> result = tableRepository.findAll();
-    //return result.stream().map(table -> table.getCharge()).mapToDouble(f -> f.doubleValue()).sum().orElse(0);
-    return 0;
-  }
-
-  public double revenueByYear () {
-    //List<TableEntity> result = tableRepository.findAll();
-    //return result.stream().map(table -> table.getCharge()).mapToDouble(f -> f.doubleValue()).sum().orElse(0);
-    return 0;
+  public Double revenueByYear (LocalDate startDate, LocalDate endDate) {
+    return tableRepository.findAllBetweenTwoDate(startDate, endDate)
+      .orElseThrow(() -> new ResourceNotFoundException("No revenue!"));
   }
 }

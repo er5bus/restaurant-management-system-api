@@ -59,14 +59,9 @@ public class TableService {
   @Transactional
   public TableEntity createTable(TableDTO tableInRequest) {
     TableEntity table = mapper.map(tableInRequest, TableEntity.class);
-    List<Double> chargeList = table.getTickets().stream()
-      .flatMap(t -> t.getDishs().stream())
-      .map(dish -> dish.getPrice())
-      .collect(Collectors.toList());
-    System.err.println(chargeList);
-    table.setCharge(chargeList.stream().mapToDouble(d -> d).sum());
-
-    TableEntity tableInBase = tableRepository.save(table);
+    TableEntity tableInBase = tableRepository.findByNbCovered(table.getNbCovered())
+        .map(t -> t)
+        .orElseGet(() -> tableRepository.save(table));
 
     if (table.getTickets() == null) {
       throw new ResourceNotFoundException("This table has no tickets");
@@ -95,7 +90,10 @@ public class TableService {
 
       System.err.println(dishs);
       //tableInBase  = tableRepository.save(table);
+      
+      ticket.setPrice(dishs.stream().map(dish -> dish.getPrice()).mapToDouble(d -> d).sum());
       ticket.setTable(tableInBase);
+      ticket.setNbCovered(tableInBase.getNbCovered());
       ticket.setDishs(dishs);
       ticket.setClient(client);
       ticketRepository.save(ticket);
@@ -113,7 +111,6 @@ public class TableService {
   public void updateTable(TableDTO tableInRequest, int id) {
     TableEntity tableToEdit = mapper.map(tableInRequest, TableEntity.class);
     tableRepository.findById(id).map(table -> {
-      table.setNumber(tableToEdit.getNumber());
       table.setNbCovered(tableToEdit.getNbCovered());
       table.setType(tableToEdit.getType());
       table.setExtraCharge(tableToEdit.getExtraCharge());

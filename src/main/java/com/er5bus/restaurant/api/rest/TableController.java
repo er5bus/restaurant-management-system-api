@@ -22,7 +22,7 @@ import javax.servlet.http.HttpServletResponse;
  */
 
 @RestController
-@RequestMapping(value = "/restaurant/v1/tables")
+@RequestMapping(value = "/api/v1/tables")
 @Api(tags = {"tables"})
 public class TableController extends AbstractRestHandler {
 

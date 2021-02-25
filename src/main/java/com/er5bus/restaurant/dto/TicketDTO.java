@@ -29,20 +29,9 @@ public class TicketDTO {
 
   private static final ModelMapper mapper = new ModelMapper();
 
-  @Positive
-  private int identifier;
-
-  @NotBlank
-  @Positive
-  private int nbCovered;
-  
   @Past
 	private LocalDate date;
-  
-  @NotBlank
-  @Positive
-  private double price;
-	
+  	
 	private ClientDTO client;
 	
 	private List<DishDTO> dishs;

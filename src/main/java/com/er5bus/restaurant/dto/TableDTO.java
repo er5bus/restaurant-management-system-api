@@ -24,10 +24,6 @@ public class TableDTO {
   private static final ModelMapper mapper = new ModelMapper();
 
   @Positive
-  private int number;
-
-  @NotBlank
-  @Positive
   private int nbCovered;
 
   @NotBlank

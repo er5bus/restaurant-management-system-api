@@ -1,5 +1,12 @@
 package com.er5bus.restaurant.api.rest;
 
+import org.springframework.format.annotation.DateTimeFormat;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
+import java.time.LocalDate;
+import java.util.HashMap;
+import java.lang.Double;
+
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -24,7 +31,7 @@ import javax.servlet.http.HttpServletResponse;
  */
 
 @RestController
-@RequestMapping(value = "/restaurant/v1/stats")
+@RequestMapping(value = "/api/v1/stats")
 @Api(tags = {"stats"})
 public class StatsController extends AbstractRestHandler {
 
@@ -48,28 +55,46 @@ public class StatsController extends AbstractRestHandler {
   @RequestMapping(value = "/most-reseved-table", method = RequestMethod.GET, produces = {"application/json"})
   @ResponseStatus(HttpStatus.OK)
   @ApiOperation(value = "The most reserved table.", notes = "Return the most reserved table")
-  public int mostReservedTable () {
+  public TableEntity mostReservedTable () {
     return statsService.mostReservedTable();
   }
 
-  @RequestMapping(value = "/most-reseved-table-by-client", method = RequestMethod.GET, consumes = {"application/json"}, produces = {"application/json"})
+  @RequestMapping(value = "/most-reseved-table-by-client", method = RequestMethod.GET, produces = {"application/json"})
   @ResponseStatus(HttpStatus.OK)
   @ApiOperation(value = "The most reserved table by client.", notes = "Return the most reserved table by client")
-  public TableEntity mostReservedTableByClient () {
-    return statsService.mostReservedTableByClient();
+  public TableEntity mostReservedTableByClient (
+      @ApiParam(value = "The client Id", required = true) @RequestParam(value="clientId", required=true) int clientId
+      ) {
+    return statsService.mostReservedTableByClient(clientId);
   }
 
-  @RequestMapping(value = "/revenue-by-day-month-week", method = RequestMethod.GET, consumes = {"application/json"}, produces = {"application/json"})
+  @RequestMapping(value = "/revenue-by-day-month-week", method = RequestMethod.GET, produces = {"application/json"})
   @ResponseStatus(HttpStatus.OK)
   @ApiOperation(value = "The revenue by day month week.", notes = "")
-  public double revenueByDayMonthWeek () {
-    return statsService.revenueByDayMonthWeek();
+  public HashMap<String, Object> revenueByDayMonthWeek (
+      @ApiParam(value = "The day", required = true) @RequestParam(required=true) @Min(1) @Max(31) int day,
+      @ApiParam(value = "The month", required = true) @RequestParam(required=true) @Min(1) @Max(12) int month,
+      @ApiParam(value = "The week", required = true) @RequestParam(required=true) @Min(1) @Max(52) int week
+      ) {
+    HashMap<String, Object> map = new HashMap<>();
+    map.put("day", day);
+    map.put("month", month);
+    map.put("week", week);
+    map.put("revenue", statsService.revenueByDayMonthWeek(day, month, week));
+    return map;
   }
 
-  @RequestMapping(value = "/revenue-by-year", method = RequestMethod.GET, consumes = {"application/json"}, produces = {"application/json"})
+  @RequestMapping(value = "/revenue-between-two-dates", method = RequestMethod.GET, produces = {"application/json"})
   @ResponseStatus(HttpStatus.OK)
   @ApiOperation(value = "The revenue by year.", notes = "")
-  public double revenueByYear () {
-    return statsService.revenueByYear();
+  public HashMap<String, Object> revenueBetweenTwoDates (
+      @ApiParam(value = "The start date(dd-MM-yyyy)", required = true) @RequestParam(required=true) @DateTimeFormat(pattern="dd-MM-yyyy") LocalDate startDate, 
+      @ApiParam(value = "The end date (dd-MM-yyyy)", required = true) @RequestParam(required=true) @DateTimeFormat(pattern="dd-MM-yyyy") LocalDate endDate
+    ) {
+    HashMap<String, Object> map = new HashMap<>();
+    map.put("startDate", startDate);
+    map.put("endDate", endDate);
+    map.put("revenue", statsService.revenueByYear(startDate, endDate));
+    return map;
   }
 }

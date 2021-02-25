@@ -18,11 +18,9 @@ public class DishDTO {
 	@Size(max=255)
 	private String name;
   
-  @NotBlank
 	@Size(max=50)
   private String type;
   
-  @NotBlank
   @Positive
   private double price;
 }

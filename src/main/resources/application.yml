@@ -5,6 +5,13 @@
 spring.jmx:
   enabled: false
 
+spring.mvc.format.date: "yyyy-MM-dd"
+spring.mvc.format.date-time: "yyyy-MM-dd HH:mm:ss"
+spring.mvc.format.time: "HH:mm:ss"
+
+jwt.secret: secret_token
+jwt.username: test
+
 spring.datasource:
   driverClassName: com.mysql.cj.jdbc.Driver
   url: jdbc:mysql://mysql_host/restaurant
