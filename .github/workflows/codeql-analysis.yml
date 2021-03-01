@@ -65,3 +65,13 @@ jobs:
 
     - name: Perform CodeQL Analysis
       uses: github/codeql-action/analyze@v1
+    - name: Automatic AI-based Docstring generation
+      # You may pin to the exact commit or the version.
+      # uses: ponicode/dogstring-action@0d2a9acd2cff787c524e3573ddb2131657b41cd3
+      uses: ponicode/dogstring-action@v0.1.2-beta
+      with:
+        # Path of repo to generate docstrings for
+        repo_path: ./
+        # Boolean: choose using the action on all the repository or just on the last commit
+        all_repo: all
+      
